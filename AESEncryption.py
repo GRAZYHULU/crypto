@@ -19,7 +19,6 @@ class AESenc():
         )
 
         self.key = base64.urlsafe_b64encode(kdf.derive(bPassword))
-        print(self.key)
 
     def encryptMessage(self, message):
         fernetObject = Fernet(self.key)
@@ -31,26 +30,12 @@ class AESenc():
         self.encryptedMessage = fernetObject.decrypt(fernetToken)
         return self.encryptedMessage
 
+    def readFile(self, filePath):
+        with open(filePath, "rb") as readF:
+            read = readF.read()
+            return read
 
+    def writeFile(self, filePath, data):
+        with open(filePath, "wb") as readF:
+            readF.write(data)
 
-def encfile():
-    x = AESenc()
-    x.setPassword("salasana")
-    with open("C:\\Users\\alexh\\Desktop\\code\\pythonKoulu\\lataus.png", "rb") as f:
-        file = f.read()
-        token = x.encryptMessage(file)
-        with open("image.enc", "wb") as fw:
-            fw.write(token)
-        #print(token)
-        #de = x.decryptMessage(token)
-        #print(de)
-
-
-
-x = AESenc()
-x.setPassword("salasana")
-with open("C:\\Users\\alexh\\Desktop\\code\\pythonKoulu\\image.enc", "rb") as f:
-    file = f.read()
-    token = x.decryptMessage(file)
-    with open("image.png", "wb") as fw:
-        fw.write(token)
