@@ -2,7 +2,8 @@ import os
 import PySimpleGUI as sg
 from PySimpleGUI.PySimpleGUI import TabGroup
 from AESEncryption import AESenc
-
+from genEcKeys import ECKeyGeneration
+from genRsaKeys import RSAKeyGeneration
 
 def FileEncryption(inputFile, password):
     try:
@@ -30,7 +31,7 @@ def FileDecryption(inputFile, password):
             print("File not found")
         if not password:
             print("Give password")
-            
+
         AESobject = AESenc()
         AESobject.setPassword(password=password)
         readFile = AESobject.readFile(inputFile)
@@ -54,7 +55,14 @@ def main():
     tab2_layout = [[sg.Text('Message')],
               [sg.Multiline()]]
 
-    layout = [[sg.TabGroup([[sg.Tab('Tab 1', tab1_layout), sg.Tab('Tab 2', tab2_layout)]])],
+    tab3_layout = [[sg.Text("File key location")],
+                [sg.Input(), sg.FolderBrowse()],
+                [sg.Text("File name (optional)")],
+                [sg.Input()],
+                [sg.Radio("EC", "KEYGEN", default=True), sg.Radio("RSA", "KEYGEN")],
+                [sg.Button("Generate")]]
+
+    layout = [[sg.TabGroup([[sg.Tab('Tab 1', tab1_layout), sg.Tab('Tab 2', tab2_layout), sg.Tab("Tab 3", tab3_layout)]])],
             [sg.Button("Exit")]]
 
     window = sg.Window('Get filename example', layout)
@@ -70,6 +78,27 @@ def main():
         elif event == "Decrypt":
             FileDecryption(inputFile=values[0], password=values[1])
 
+        elif event == "Generate":
+            if values[4]:
+                # if not values[3]:
+                #     path = os.getcwd()
+                # else:
+                #     path = values[3]
+                ecObject = ECKeyGeneration()
+                ecObject.genKeys()
+                ecObject.writeToFile(values[3], values[6])
+
+
+            elif values[5]:
+                # if not values[3]:
+                #     path = os.getcwd()
+                # else:
+                #     path = values[3]
+                rsaObject = RSAKeyGeneration()
+                rsaObject.genKeys()
+                rsaObject.writeToFile(values[3], values[6])
+
+        print(event, values)
     window.close()
 
 

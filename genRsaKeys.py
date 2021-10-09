@@ -1,3 +1,4 @@
+import os
 from cryptography.hazmat.backends.interfaces import EllipticCurveBackend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
@@ -21,10 +22,14 @@ class RSAKeyGeneration():
             format=serialization.PublicFormat.SubjectPublicKeyInfo
 
         )
-        print(privateKeypem)
-        print(publicKeyPem)
 
-    def writeToFile(self):
+    def writeToFile(self, path, name):
+
+
+        if os.path.isdir(path):
+            keyPath = os.path.join(path, name)
+        else:
+            print("Invalid Path")
 
         if isinstance(self.privateKeyObject, rsa.RSAPrivateKey):
             try:
@@ -48,8 +53,3 @@ class RSAKeyGeneration():
                     f.write(pem)
             except Exception as e:
                 print(e)
-
-key = RSAKeyGeneration()
-key.genKeys()
-key.showKeys()
-key.writeToFile()

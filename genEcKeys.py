@@ -1,6 +1,8 @@
+import os
 from cryptography.hazmat.backends.interfaces import EllipticCurveBackend
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 from cryptography.hazmat.primitives import serialization
+
 
 class ECKeyGeneration():
 
@@ -21,11 +23,19 @@ class ECKeyGeneration():
             format=serialization.PublicFormat.SubjectPublicKeyInfo
 
         )
-        print(privateKeypem)
-        print(publicKeyPem)
 
-    def writeToFile(self):
+    def writeToFile(self, path=None, name="Key"):
 
+
+        if os.path.isdir(path):
+            pathPrivate = os.path.join(path, f"{name}.private")
+            pathPublic = os.path.join(path, f"{name}.private")
+        else:
+            path = os.getcwd()
+            pathPrivate = os.path.join(path, f"{name}.private")
+            pathPublic = os.path.join(path, f"{name}.private")
+
+            
         if isinstance(self.privateKeyObject, ec.EllipticCurvePrivateKey):
             try:
                 pem = self.privateKeyObject.private_bytes(
@@ -33,7 +43,7 @@ class ECKeyGeneration():
                     format=serialization.PrivateFormat.PKCS8,
                     encryption_algorithm=serialization.NoEncryption()
                     )
-                with open ("key.private", "wb") as f:
+                with open (privateKeyPath, "wb") as f:
                     f.write(pem)
             except Exception as e:
                 print(e)
@@ -44,12 +54,8 @@ class ECKeyGeneration():
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PublicFormat.SubjectPublicKeyInfo            
                     )
-                with open ("key.public", "wb") as f:
+                with open (publicKeyPath, "wb") as f:
                     f.write(pem)
             except Exception as e:
                 print(e)
 
-key = ECKeyGeneration()
-key.genKeys()
-key.showKeys()
-key.writeToFile()
