@@ -1,9 +1,11 @@
 import os
 import PySimpleGUI as sg
 from PySimpleGUI.PySimpleGUI import TabGroup
+from cryptography.hazmat import primitives
 from AESEncryption import AESenc
 from genEcKeys import ECKeyGeneration
 from genRsaKeys import RSAKeyGeneration
+from MessageHashing import HashingMessage
 
 def FileEncryption(inputFile, password):
     try:
@@ -53,7 +55,9 @@ def main():
               [sg.Button("Encrypt"), sg.Button("Decrypt")]]
 
     tab2_layout = [[sg.Text('Message')],
-              [sg.Multiline()]]
+              [sg.Text(), sg.FileBrowse()],
+              [sg.Input('', key='-TEXT-')],
+              [sg.Button("HASH")]]
 
     tab3_layout = [[sg.Text("File key location")],
                 [sg.Input(), sg.FolderBrowse()],
@@ -98,7 +102,17 @@ def main():
                 rsaObject.genKeys()
                 rsaObject.writeToFile(values[3], values[6])
 
-        print(event, values)
+        elif event == "HASH":
+            try:
+                with open(values["Browse0"], "rb") as f:
+                    bReadFile = f.readline()
+                    digest = HashingMessage().hashMessage(bReadFile)
+                    window['-TEXT-'].update(digest)
+
+            except Exception as e:
+                print(e)
+
+        #print(event, values)
     window.close()
 
 
