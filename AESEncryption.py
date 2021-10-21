@@ -9,22 +9,24 @@ class AESenc():
 
 
     def setPassword(self, password):
-
+        # Asetetaan salasana, joka käy cryptography kirjastolle
         bPassword = bytes(password, "utf-16")
         kdf = PBKDF2HMAC(
             hashes.SHA3_256(),
             length=32,
-            salt=bPassword,
+            salt=bPassword, # Käytetään salasanaa suolana. Ei saisi tehdä näin mutta olen laiska miettimään mitään parempaa.
             iterations=100000,
         )
 
         self.key = base64.urlsafe_b64encode(kdf.derive(bPassword))
-
+    
+    # Salataan tiedosto.
     def encryptMessage(self, message):
         fernetObject = Fernet(self.key)
         self.encryptedMessage = fernetObject.encrypt(message)
-        return self.encryptedMessage
+        return self.encryptedMessage # Palauttaa fernetToken, joka on base64 string
 
+    # Purkaa tiedoston käyttäen fernetToken.
     def decryptMessage(self, fernetToken):
         fernetObject = Fernet(self.key)
         self.encryptedMessage = fernetObject.decrypt(fernetToken)

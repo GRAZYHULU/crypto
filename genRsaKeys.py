@@ -5,11 +5,12 @@ from cryptography.hazmat.primitives import serialization
 
 class RSAKeyGeneration():
 
+    # Luo RSA avaimet. Yksityisen avaimen koko on 2048bits
     def genKeys(self):
         self.privateKeyObject = rsa.generate_private_key(public_exponent=65537, key_size=2048)
         self.publicKeyObject = self.privateKeyObject.public_key()
 
-
+    # Näyttää luodut avaimet. Tätä funktiota ei kutsuta missään.
     def showKeys(self):
         privateKeypem = self.privateKeyObject.private_bytes(
             encoding=serialization.Encoding.PEM,
@@ -23,33 +24,38 @@ class RSAKeyGeneration():
 
         )
 
-    def writeToFile(self, path, name):
-
+    # Tekee luoduista avaimista tiedostoja.
+    def writeToFile(self, path=None, name="Key"):
 
         if os.path.isdir(path):
-            keyPath = os.path.join(path, name)
+            pathPrivate = os.path.join(path, f"{name}.private")
+            pathPublic = os.path.join(path, f"{name}.public")
         else:
-            print("Invalid Path")
+            path = os.getcwd()
+            pathPrivate = os.path.join(path, f"{name}.private")
+            pathPublic = os.path.join(path, f"{name}.public")
 
         if isinstance(self.privateKeyObject, rsa.RSAPrivateKey):
+            # Lukee yksityisen avaimen muistista ja kirjoittaa sen tiedostoon.
             try:
                 pem = self.privateKeyObject.private_bytes(
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PrivateFormat.PKCS8,
                     encryption_algorithm=serialization.NoEncryption()
                     )
-                with open ("key.private", "wb") as f:
+                with open (pathPrivate, "wb") as f:
                     f.write(pem)
             except Exception as e:
                 print(e)
 
         if isinstance(self.publicKeyObject, rsa.RSAPublicKey):
+            # Lukee julkisen avaimen muistista ja kirjoittaa sen tiedostoon.
             try:
                 pem = self.publicKeyObject.public_bytes(
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PublicFormat.SubjectPublicKeyInfo            
                     )
-                with open ("key.public", "wb") as f:
+                with open (pathPublic, "wb") as f:
                     f.write(pem)
             except Exception as e:
                 print(e)
